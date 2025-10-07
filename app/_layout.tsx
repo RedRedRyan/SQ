@@ -1,29 +1,23 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { SplashScreen, Stack } from "expo-router";
+import { useEffect } from 'react';
+import '../global.css';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  const [fontsLoaded, error]= useFonts({
+    'Lato-Regular': require('@/assets/fonts/Lato-Regular.ttf'),
+    'Lato-Bold': require('@/assets/fonts/Lato-Bold.ttf'),
+    'Lato-Italic': require('@/assets/fonts/Lato-Italic.ttf'),
+    'Lato-Black': require('@/assets/fonts/Lato-Black.ttf'),
+    'Lato-Light': require('@/assets/fonts/Lato-Light.ttf'),
   });
+  useEffect(()=>{
+    if(error) throw error;
+    if(fontsLoaded) SplashScreen.hideAsync();
+  },[fontsLoaded, error]);
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+  if(!fontsLoaded) return null;
+  return <Stack screenOptions={{headerShown: false}} />;
 }
